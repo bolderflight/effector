@@ -36,7 +36,7 @@ class Effector {
     if (use_pwm_) {
       analogWriteResolution(PWM_RESOLUTION_BITS_);
       pwm_frequency_.fill(DEFAULT_PWM_FREQUENCY);
-      pwm_period_.fill(1.0f /  DEFAULT_PWM_FREQUENCY  * 1000000.0f);
+      pwm_period_.fill(1.0f /  DEFAULT_PWM_FREQUENCY * 1000000.0f);
     }
   }
   /* Enable / disable motors and actuators */
