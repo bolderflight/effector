@@ -39,19 +39,52 @@ class Effector {
       pwm_period_.fill(1.0f /  DEFAULT_PWM_FREQUENCY  * 1000000.0f);
     }
   }
+  /* Enable / disable motors and actuators */
+  void enable_motors() {enable_motor_ = true;}
+  void disable_motors() {enable_motor_ = false;}
+  void enable_actuators() {enable_act_ = true;}
+  void disable_actuators() {enable_act_ = false;}
   /* Add an effector command */
   template<std::size_t SIZE>
-  void AddCmd(const types::ActuatorCmd<SIZE> &act) {
+  void AddCmd(const types::EffectorCmd<SIZE> &act) {
     /* SBUS */
-    if (act.actuator_type() == types::ActuatorCmd<SIZE>::SBUS) {
+    if ((act.effector_type() == types::EffectorCmd<SIZE>::SBUS) && (use_sbus_)) {
       if ((act.channel() >= 0) && (act.channel() < sbus_cmds_.size())) {
-        sbus_cmds_[act.channel()] = polytools::polyval(act.calibration_coeff(), act.deg());
+        if (enable_act_) {
+          sbus_cmds_[act.channel()] = polytools::polyval(act.calibration_coeff(), act.deg());
+        } else {
+          sbus_cmds_[act.channel()] = polytools::polyval(act.calibration_coeff(), act.safe());
+        }
       }
     }
     /* PWM */
-    if (act.actuator_type() == types::ActuatorCmd<SIZE>::PWM) {
+    if ((act.effector_type() == types::EffectorCmd<SIZE>::PWM) && (use_pwm_)) {
       if ((act.channel() >= 0) && (act.channel() < LEN)) {
-        pwm_cmds_[act.channel()] = polytools::polyval(act.calibration_coeff(), act.deg());
+        if (enable_act_) {
+          pwm_cmds_[act.channel()] = polytools::polyval(act.calibration_coeff(), act.deg());
+        } else {
+          pwm_cmds_[act.channel()] = polytools::polyval(act.calibration_coeff(), act.safe());
+        }
+      }
+    }
+    /* SBUS Motor */
+    if ((act.effector_type() == types::EffectorCmd<SIZE>::SBUS_MOTOR) && (use_sbus_)) {
+      if ((act.channel() >= 0) && (act.channel() < sbus_cmds_.size())) {
+        if (enable_motor_) {
+          sbus_cmds_[act.channel()] = polytools::polyval(act.calibration_coeff(), act.deg());
+        } else {
+          sbus_cmds_[act.channel()] = polytools::polyval(act.calibration_coeff(), act.safe());
+        }
+      }
+    }
+    /* PWM Motor */
+    if ((act.effector_type() == types::EffectorCmd<SIZE>::PWM_MOTOR) && (use_pwm_)) {
+      if ((act.channel() >= 0) && (act.channel() < LEN)) {
+        if (enable_motor_) {
+          pwm_cmds_[act.channel()] = polytools::polyval(act.calibration_coeff(), act.deg());
+        } else {
+          pwm_cmds_[act.channel()] = polytools::polyval(act.calibration_coeff(), act.safe());
+        }
       }
     }
   }
@@ -73,6 +106,8 @@ class Effector {
  private:
   /* Flags */
   bool use_pwm_, use_sbus_;
+  bool enable_motor_ = false;
+  bool enable_act_ = true;
   /* SBUS object */
   actuators::Sbus sbus_;
   /* SBUS commands */
