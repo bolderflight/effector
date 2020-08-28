@@ -19,7 +19,7 @@ cmake ..
 make
 ```
 
-This will build the library and example executable called *actuator_example*. The example executable source file is located at *examples/actuator_example.cc*. This code is built and tested on AARCH64 and AMD64 systems running Linux and on AMD64 systems running the Windows Subsystem for Linux (WSL). The [arm-none-eabi](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads) toolchain must be installed in your Linux environment.
+This will build the library and example executable called *actuator_example*. The example executable source file is located at *examples/actuator_example.cc*. This code is built and tested on AARCH64 and AMD64 systems running Linux and on AMD64 systems running the Windows Subsystem for Linux (WSL).
 
 # Namespaces
 This library is within the namespace actuators
