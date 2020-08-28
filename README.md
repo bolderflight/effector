@@ -66,4 +66,4 @@ By default, motors are disabled and servos are enabled.
 
 **void EnableServos()** Enables servos to output values.
 
-**DisableServos()** Disables servo commands, using the failsafe value instead. Together with the *EnableServos* function, this could be part of a lost link solution.
+**void DisableServos()** Disables servo commands, using the failsafe value instead. Together with the *EnableServos* function, this could be part of a lost link solution.
