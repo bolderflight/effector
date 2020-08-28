@@ -1,4 +1,4 @@
-# actuators
+# actuator
 This library provides utility functions for interacting with actuators. 
    * [License](LICENSE.md)
    * [Changelog](CHANGELOG.md)
