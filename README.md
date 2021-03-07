@@ -10,7 +10,6 @@ CMake is used to build this library, which is exported as a library target calle
 ```
 #include "actuator/actuator.h"
 ```
-Note that you'll need CMake version 3.13 or above; it is recommended to build and install CMake from source, directions are located in the [CMake GitLab repository](https://github.com/Kitware/CMake).
 
 The library can be also be compiled stand-alone using the CMake idiom of creating a *build* directory and then, from within that directory issuing:
 
@@ -19,10 +18,10 @@ cmake ..
 make
 ```
 
-This will build the library and example executable called *actuator_example*. The example executable source file is located at *examples/actuator_example.cc*. This code is built and tested on AARCH64 and AMD64 systems running Linux and on AMD64 systems running the Windows Subsystem for Linux (WSL).
+This will build the library and example executable called *actuator_example*. The example executable source file is located at *examples/actuator_example.cc*.
 
 # Namespaces
-This library is within the namespace actuators
+This library is within the namespace *bfs*
 
 # Objects
 
@@ -35,27 +34,27 @@ This library is within the namespace actuators
 
 **Actuator<int N>** This struct defines an actuator object. Member variables are:
    * *Type type*: the actuator type
-   * *int channel*: the actuator channel (i.e. PWM channel 0, SBUS channel 15, etc)
+   * *int ch*: the actuator channel (i.e. PWM channel 0, SBUS channel 15, etc)
    * *float failsafe*: the actuator command when failsafed
    * *std::array<float, N> calibration_coeff*: polynomial coefficients taking the input command value (i.e. a surface angle command) to the output format (i.e. SBUS or PWM command)
 
 Note that all of these member variables are constant and should be defined when the object is declared. The size of the *calibration_coeff* array is templated. 
 
 ```C++
-actuators::Actuator<2> de = {
-   .type = actuators::SERVO,
+bfs::Actuator<2> de = {
+   .type = bfs::SERVO,
    .channel = 0,
    .failsafe = 0,
    .calibration_coeff = {1, 0}
 };
 ```
 
-# Functions
+# Methods
 
-**uint16_t Cmd(const Actuator<N> &ref, const float cmd)** Given a reference to an actuator object and an angle command, computes the appropriate PWM or SBUS value using the actuator object polynomial coefficients. If the actuator object is a *MOTOR* type and motors are disabled, this function will output the failsafe command applied to the calibration polynomial. Similarly if a *SERVO* type and servos are disabled.
+**uint16_t Cmd(const float cmd)** Given an angle command, computes the appropriate PWM or SBUS value using the actuator object polynomial coefficients. If the actuator object is a *MOTOR* type and motors are disabled, this function will output the failsafe command applied to the calibration polynomial. Similarly if a *SERVO* type and servos are disabled.
 
 ```C++
-std::cout << actuators::Cmd(de, 10) << std::endl;
+std::cout << de.Cmd(10) << std::endl;
 ```
 
 By default, motors are disabled and servos are enabled.

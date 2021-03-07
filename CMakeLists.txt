@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 # Project information
 project(Actuator
-	VERSION 1.0.2
+	VERSION 2.0.0
 	DESCRIPTION "Actuator utility functions"
 	LANGUAGES CXX
 )
@@ -9,8 +9,8 @@ include(FetchContent)
 # Fetch polytools
 FetchContent_Declare(
 	polytools
-	GIT_REPOSITORY 	https://gitlab.com/bolderflight/software/polytools.git
-	GIT_TAG v1.0.3
+	GIT_REPOSITORY https://github.com/bolderflight/polytools.git
+	GIT_TAG v2.0.0
 )
 FetchContent_MakeAvailable(polytools)	
 # Add the library target
