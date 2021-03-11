@@ -6,5 +6,5 @@ Lint:
   tags:
     - bfs
   script: 
-    - cpplint --verbose=0 include/actuator/actuator.h
+    - cpplint --verbose=0 include/effector/effector.h
   
