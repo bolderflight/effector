@@ -36,15 +36,17 @@ This library is within the namespace *bfs*
    * *Type type*: the actuator type
    * *int ch*: the actuator channel (i.e. PWM channel 0, SBUS channel 15, etc)
    * *float failsafe*: the actuator command when failsafed
-   * *std::array<float, N> calibration_coeff*: polynomial coefficients taking the input command value (i.e. a surface angle command) to the output format (i.e. SBUS or PWM command)
+   * *std::size_t size*: the number of calibration coefficients
+   * *std::array<float, N> cal_coeff*: polynomial coefficients taking the input command value (i.e. a surface angle command) to the output format (i.e. SBUS or PWM command)
 
-Note that all of these member variables are constant and should be defined when the object is declared. The size of the *calibration_coeff* array is templated. 
+The maximum size of the *cal_coeff* array is templated. 
 
 ```C++
-bfs::Actuator<2> de = {
+bfs::Actuator<10> de = {
    .type = bfs::SERVO,
    .channel = 0,
    .failsafe = 0,
+   .size = 2,
    .calibration_coeff = {1, 0}
 };
 ```

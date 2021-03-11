@@ -29,18 +29,20 @@
 int main() {
 
   /* Servo actuator */
-  bfs::Actuator<2> de = {
+  bfs::Actuator<20> de = {
     .type = bfs::SERVO,
     .ch = 0,
     .failsafe = 0,
-    .calibration_coeff = {1, 0}
+    .size = 2,
+    .cal_coeff = {1, 0}
   };
   /* Motor actuator */
-  bfs::Actuator<2> throttle = {
+  bfs::Actuator<20> throttle = {
     .type = bfs::MOTOR,
     .ch = 0,
     .failsafe = 0,
-    .calibration_coeff = {1, 0}
+    .size = 2,
+    .cal_coeff = {1, 0}
   };
   /* Print the command */
   std::cout << de.Cmd(10) << "\t" << throttle.Cmd(10) << std::endl;

@@ -44,19 +44,20 @@ enum Type {
 /* Defines an actuator */
 template<int N>
 struct Actuator {
-  const Type type;
-  const int ch;
-  const float failsafe;
-  const std::array<float, N> calibration_coeff;
+  Type type;
+  int ch;
+  float failsafe;
+  std::size_t size;
+  std::array<float, N> cal_coeff;
   uint16_t Cmd(const float cmd) {
     if ((type == SERVO) && (internal::servo_enable_)) {
-      return static_cast<uint16_t>(polyval(calibration_coeff, cmd));
+      return static_cast<uint16_t>(polyval(cal_coeff.data(), size, cmd));
     } else if ((type == SERVO) && (!internal::servo_enable_)) {
-      return static_cast<uint16_t>(polyval(calibration_coeff, failsafe));
+      return static_cast<uint16_t>(polyval(cal_coeff.data(), size, failsafe));
     } else if ((type == MOTOR) && (internal::motor_enable_)) {
-      return static_cast<uint16_t>(polyval(calibration_coeff, cmd));
+      return static_cast<uint16_t>(polyval(cal_coeff.data(), size, cmd));
     } else {
-      return static_cast<uint16_t>(polyval(calibration_coeff, failsafe));
+      return static_cast<uint16_t>(polyval(cal_coeff.data(), size, failsafe));
     }
   }
 };

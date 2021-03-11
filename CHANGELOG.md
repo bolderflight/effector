@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.0
+- Added a size member to select the number of coefficients
+- The template sets the max number of coefficients
+
 ## v2.0.0
 - Updated namespace to *bfs*
 - Updated to support polytools v2.0.0
