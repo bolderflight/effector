@@ -49,7 +49,8 @@ struct Effector {
   uint16_t Cmd(const float cmd, const bool motor_en) const {
     return Cmd(cmd, true, motor_en);
   }
-  uint16_t Cmd(const float cmd, const bool servo_en, const bool motor_en) const {
+  uint16_t Cmd(const float cmd, const bool servo_en, 
+               const bool motor_en) const {
     if ((type == EffectorType::SERVO) && (servo_en)) {
       return static_cast<uint16_t>(polyval(cal_coeff.data(), size, cmd));
     } else if ((type == EffectorType::SERVO) && (!servo_en)) {
