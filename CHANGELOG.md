@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.0.1
+- Fixing const-ness of Cmd method
+
 ## v4.0.0
 - Moved the servo and motor enable to inputs for the Cmd method
 - Changed Type to EffectorType and made it an enum class for better type safety
