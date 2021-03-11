@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.0.0
+- Moved the servo and motor enable to inputs for the Cmd method
+- Changed Type to EffectorType and made it an enum class for better type safety
+- Renamed the library to effector instead of actuator to better match nomenclature used elsewhere.
+
 ## v3.0.0
 - Added a size member to select the number of coefficients
 - The template sets the max number of coefficients

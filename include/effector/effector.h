@@ -23,50 +23,45 @@
 * IN THE SOFTWARE.
 */
 
-#ifndef INCLUDE_ACTUATOR_ACTUATOR_H_
-#define INCLUDE_ACTUATOR_ACTUATOR_H_
+#ifndef INCLUDE_EFFECTOR_EFFECTOR_H_
+#define INCLUDE_EFFECTOR_EFFECTOR_H_
 
 #include <array>
 #include "polytools/polytools.h"
 
 namespace bfs {
-namespace internal {
-/* motor enable / disable state */
-bool motor_enable_ = false;
-/* servo enable / disable state */
-bool servo_enable_ = true;
-}  // namespace internal
-/* Actuator types */
-enum Type {
+/* Effector types */
+enum class EffectorType {
   SERVO,
   MOTOR
 };
-/* Defines an actuator */
+/* Defines an effector */
 template<int N>
-struct Actuator {
-  Type type;
-  int ch;
-  float failsafe;
-  std::size_t size;
-  std::array<float, N> cal_coeff;
+struct Effector {
+  const EffectorType type;
+  const int ch;
+  const float failsafe;
+  const std::size_t size;
+  const std::array<float, N> cal_coeff;
   uint16_t Cmd(const float cmd) {
-    if ((type == SERVO) && (internal::servo_enable_)) {
+    return Cmd(cmd, true, true);
+  }
+  uint16_t Cmd(const float cmd, const bool motor_en) {
+    return Cmd(cmd, true, motor_en);
+  }
+  uint16_t Cmd(const float cmd, const bool servo_en, const bool motor_en) {
+    if ((type == EffectorType::SERVO) && (servo_en)) {
       return static_cast<uint16_t>(polyval(cal_coeff.data(), size, cmd));
-    } else if ((type == SERVO) && (!internal::servo_enable_)) {
+    } else if ((type == EffectorType::SERVO) && (!servo_en)) {
       return static_cast<uint16_t>(polyval(cal_coeff.data(), size, failsafe));
-    } else if ((type == MOTOR) && (internal::motor_enable_)) {
+    } else if ((type == EffectorType::MOTOR) && (motor_en)) {
       return static_cast<uint16_t>(polyval(cal_coeff.data(), size, cmd));
     } else {
       return static_cast<uint16_t>(polyval(cal_coeff.data(), size, failsafe));
     }
   }
 };
-/* Enable / disable motors */
-void EnableMotors() {internal::motor_enable_ = true;}
-void DisableMotors() {internal::motor_enable_ = false;}
-/* Enable / disable servos */
-void EnableServos() {internal::servo_enable_ = true;}
-void DisableServos() {internal::servo_enable_ = false;}
+
 }  // namespace bfs
 
-#endif  // INCLUDE_ACTUATOR_ACTUATOR_H_
+#endif  // INCLUDE_EFFECTOR_EFFECTOR_H_
