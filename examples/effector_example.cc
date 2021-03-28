@@ -33,6 +33,8 @@ int main() {
     .type = bfs::EffectorType::SERVO,
     .ch = 0,
     .failsafe = 0,
+    .min = -20,
+    .max = 20,
     .size = 2,
     .cal_coeff = {1, 0}
   };
@@ -41,6 +43,8 @@ int main() {
     .type = bfs::EffectorType::MOTOR,
     .ch = 0,
     .failsafe = 0,
+    .min = 0,
+    .max = 100,
     .size = 2,
     .cal_coeff = {1, 0}
   };

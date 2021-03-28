@@ -41,6 +41,8 @@ struct Effector {
   const EffectorType type;
   const int ch;
   const float failsafe;
+  const float min;
+  const float max;
   const std::size_t size;
   const std::array<float, N> cal_coeff;
   uint16_t Cmd(const float cmd) const {
@@ -51,6 +53,16 @@ struct Effector {
   }
   uint16_t Cmd(const float cmd, const bool servo_en,
                const bool motor_en) const {
+    /* Command limiting */
+    float cmd_;
+    if (cmd < min) {
+      cmd_ = min;
+    } else if (cmd > max) {
+      cmd_ = max;
+    } else {
+      cmd_ = cmd;
+    }
+    /* Failsafe and polyval to output */
     if ((type == EffectorType::SERVO) && (servo_en)) {
       return static_cast<uint16_t>(polyval(cal_coeff.data(), size, cmd));
     } else if ((type == EffectorType::SERVO) && (!servo_en)) {

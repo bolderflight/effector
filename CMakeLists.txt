@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 # Project information
 project(Effector
-	VERSION 4.0.1
+	VERSION 4.1.1
 	DESCRIPTION "Effector utility functions"
 	LANGUAGES CXX
 )

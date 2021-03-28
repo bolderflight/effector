@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.1.1
+- Added min and max limits
+
 ## v4.0.1
 - Fixing const-ness of Cmd method
 
