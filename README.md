@@ -36,6 +36,8 @@ This library is within the namespace *bfs*
    * *Type type*: the effector type
    * *int ch*: the effector channel (i.e. PWM channel 0, SBUS channel 15, etc)
    * *float failsafe*: the effector command when failsafed
+   * *float min*: minimum command input, saturates the command at this value
+   * *float max*: maximum command input, saturates the command at this value
    * *std::size_t size*: the number of calibration coefficients
    * *std::array<float, N> cal_coeff*: polynomial coefficients taking the input command value (i.e. a surface angle command) to the output format (i.e. SBUS or PWM command)
 
@@ -46,6 +48,8 @@ bfs::Effector<10> de = {
    .type = bfs::EffectorTypeSERVO,
    .channel = 0,
    .failsafe = 0,
+   .min = -20,
+   .max = 20,
    .size = 2,
    .calibration_coeff = {1, 0}
 };
