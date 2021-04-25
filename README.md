@@ -1,8 +1,11 @@
 # effector
-This library provides utility functions for interacting with effectors. 
+Defines a common interface for our effectors.
    * [License](LICENSE.md)
    * [Changelog](CHANGELOG.md)
    * [Contributing guide](CONTRIBUTING.md)
+
+# Description
+This library abstracts away effector hardware specifics by defining common configuration and data sturctures and an interface class defining common methods for effectors. This enables the designer of higher-level software to reference this class, rather than individual effector drivers, and have a fixed interface to design against.
 
 ## Installation
 CMake is used to build this library, which is exported as a library target called *effector*. The header is added as:
@@ -14,63 +17,63 @@ CMake is used to build this library, which is exported as a library target calle
 The library can be also be compiled stand-alone using the CMake idiom of creating a *build* directory and then, from within that directory issuing:
 
 ```
-cmake ..
+cmake .. -DMCU=MK66FX1M0
 make
 ```
 
-This will build the library and example executable called *effector_example*. The example executable source file is located at *examples/effector_example.cc*.
+This will build the library. Notice that the *cmake* command includes a define specifying the microcontroller the code is being compiled for. This is required to correctly configure the code, CPU frequency, and compile/linker options. The available MCUs are:
+   * MK20DX128
+   * MK20DX256
+   * MK64FX512
+   * MK66FX1M0
+   * MKL26Z64
+   * IMXRT1062_T40
+   * IMXRT1062_T41
 
-# Namespaces
-This library is within the namespace *bfs*
+These are known to work with the same packages used in Teensy products. Also switching packages is known to work well, as long as it's only a package change.
 
-# Objects
+## Namespace
+This library is within the namespace *bfs*.
 
-**enum class EffectorType** This enum defines the type of effector, options are a servo or a motor.
+## Class / Methods
 
-| Effector Type | Enum Value |
+**struct EffectorConfig** defines a structure used to configure an effector. The data fields are:
+
+| Name | Description |
 | --- | --- |
-| Servo | SERVO |
-| Motor | MOTOR |
+| EffectorType type | The effector type |
+| int8_t ch | The effector channel number |
+| float min | Minimum command |
+| float max | Maximum command |
+| float failsafe | Failsafe command |
+| std::vector<float> poly_coef | A vector of polynomial coefficients to convert an effector angle command to the raw command to send the servo or motor |
 
-**Effector<int N>** This struct defines an *effector* object. Member variables are:
-   * *Type type*: the effector type
-   * *int ch*: the effector channel (i.e. PWM channel 0, SBUS channel 15, etc)
-   * *float failsafe*: the effector command when failsafed
-   * *float min*: minimum command input, saturates the command at this value
-   * *float max*: maximum command input, saturates the command at this value
-   * *std::size_t size*: the number of calibration coefficients
-   * *std::array<float, N> cal_coeff*: polynomial coefficients taking the input command value (i.e. a surface angle command) to the output format (i.e. SBUS or PWM command)
+The effector type is an enum called *EffectorType*:
 
-Note that all of these member variables are constant and should be defined when the object is declared. The maximum size of the *cal_coeff* array is templated. 
+| Name | Description |
+| --- | --- |
+| SERVO | A servo / actuator |
+| MOTOR | A motor |
 
-```C++
-bfs::Effector<10> de = {
-   .type = bfs::EffectorTypeSERVO,
-   .channel = 0,
-   .failsafe = 0,
-   .min = -20,
-   .max = 20,
-   .size = 2,
-   .calibration_coeff = {1, 0}
-};
-```
-
-# Methods
-
-**uint16_t Cmd(const float cmd, const bool servo_en, const bool motor_en)** Given an angle command, computes the appropriate PWM or SBUS value using the effector object polynomial coefficients. Also has inputs for setting whether the servo and motor are enabled. If the effector object is a *MOTOR* type and motors are disabled, this function will output the failsafe command applied to the calibration polynomial. Similarly if a *SERVO* type and servos are disabled.
+**Effector** The *Effector* class defines a common interface to effectors. It is templated with the object implementing this interface for the desired sensor. It is also templated with the number of effectors of the specified object. For example, the SBUS implementation with 16 SBUS channels may be:
 
 ```C++
-std::cout << de.Cmd(10, true, true) << std::endl;
+bfs::Effector<bfs::SbusTx, 16> effector(&Serial1);
 ```
 
-**uint16_t Cmd(const float cmd, const bool motor_en)** Given an angle command, computes the appropriate PWM or SBUS value using the effector object polynomial coefficients. Also has an input for setting whether motors are enabled. Servos are always enabled in this overload. If the effector object is a *MOTOR* type and motors are disabled, this function will output the failsafe command applied to the calibration polynomial.
+Similar to how a pure virtual class can be used to define an interface using dynamic polymorphism, this approach uses static polymorphism.
 
-```C++
-std::cout << de.Cmd(10, false) << std::endl;
-```
+**explicit Effector(HardwareSerial &ast;bus)** creates an effector object; a pointer to the Serial bus object is passed.
 
-**uint16_t Cmd(const float cmd)** Given an angle command, computes the appropriate PWM or SBUS value using the effector object polynomial coefficients. Motors and servos are always enabled with this overload.
+**explicit Effector(const std::array<int, N> &pins)** creates an effector object, an array of effector pins is passed.
 
-```C++
-std::cout << de.Cmd(10) << std::endl;
-```
+**bool Init(const std::array<EffectorConfig, N> &ref)** initializes communication with the effectors and configures them given an array of EffectorConfig objects. Returns true if communication is established and configuration was successful.
+
+**bool Cmd(const std::array<float, N> &cmds)** sets the effector commands given an array of angle commands.
+
+**void Write()** writes the commands to the effectors.
+
+**void EnableMotors(const bool val)** enables outputs from the motors if passed true, otherwise, uses the failsafe command. Defaults false.
+
+**void EnableMotors(const bool val)** enables outputs from the servos if passed true, otherwise, uses the failsafe command. Defaults true.
+
