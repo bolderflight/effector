@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.0.0
+- Modified to be an interface class
+
 ## v4.1.1
 - Added min and max limits
 

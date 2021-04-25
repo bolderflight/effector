@@ -27,52 +27,36 @@
 #define INCLUDE_EFFECTOR_EFFECTOR_H_
 
 #include <array>
-#include "polytools/polytools.h"
+#include <vector>
+#include "Core/core.h"
 
 namespace bfs {
-/* Effector types */
+
 enum class EffectorType {
   SERVO,
   MOTOR
 };
-/* Defines an effector */
-template<int N>
-struct Effector {
-  const EffectorType type;
-  const int ch;
-  const float failsafe;
-  const float min;
-  const float max;
-  const std::size_t size;
-  const std::array<float, N> cal_coeff;
-  uint16_t Cmd(const float cmd) const {
-    return Cmd(cmd, true, true);
-  }
-  uint16_t Cmd(const float cmd, const bool motor_en) const {
-    return Cmd(cmd, true, motor_en);
-  }
-  uint16_t Cmd(const float cmd, const bool servo_en,
-               const bool motor_en) const {
-    /* Command limiting */
-    float cmd_;
-    if (cmd < min) {
-      cmd_ = min;
-    } else if (cmd > max) {
-      cmd_ = max;
-    } else {
-      cmd_ = cmd;
-    }
-    /* Failsafe and polyval to output */
-    if ((type == EffectorType::SERVO) && (servo_en)) {
-      return static_cast<uint16_t>(polyval(cal_coeff.data(), size, cmd));
-    } else if ((type == EffectorType::SERVO) && (!servo_en)) {
-      return static_cast<uint16_t>(polyval(cal_coeff.data(), size, failsafe));
-    } else if ((type == EffectorType::MOTOR) && (motor_en)) {
-      return static_cast<uint16_t>(polyval(cal_coeff.data(), size, cmd));
-    } else {
-      return static_cast<uint16_t>(polyval(cal_coeff.data(), size, failsafe));
-    }
-  }
+struct EffectorConfig {
+  EffectorType type;
+  int8_t ch;
+  float min;
+  float max;
+  float failsafe;
+  std::vector<float> poly_coef;
+};
+template<class Impl, std::size_t N>
+class Effector {
+ public:
+  explicit Effector(HardwareSerial *bus) : impl_(bus) {}
+  explicit Effector(const std::array<int, N> &pins) : impl_(pins) {}
+  bool Init(const std::array<EffectorConfig, N> &ref) {return impl_.Init(ref);}
+  bool Cmd(const std::array<float, N> &cmds) {return impl_.Cmd(cmds);}
+  void Write() {impl_.Write();}
+  void EnableMotors(const bool val) {impl_.EnableMotors(val);}
+  void EnableServos(const bool val) {impl_.EnableServos(val);}
+
+ private:
+  Impl impl_;
 };
 
 }  // namespace bfs
