@@ -37,43 +37,44 @@ This library is within the namespace *bfs*.
 
 ## Class / Methods
 
-**struct EffectorConfig** defines a structure used to configure an effector. The data fields are:
+**enum EffectorType** Describes the type of effector.
+
+| Name | Description |
+| --- | --- |
+| SERVO_PWM | A servo / actuator |
+| MOTOR_PWM | A motor |
+
+**struct EffectorChannel** defines the configuration for a single effector.
 
 | Name | Description |
 | --- | --- |
 | EffectorType type | The effector type |
 | int8_t ch | The effector channel number |
-| float min | Minimum command |
+| float min | Minimum command  |
 | float max | Maximum command |
-| float failsafe | Failsafe command |
-| std::vector<float> poly_coef | A vector of polynomial coefficients to convert an effector angle command to the raw command to send the servo or motor |
+| float failsafe | Failsafe commnd |
+| int8_t num_coef | The number of polynomial coefficients |
+| float poly_coef[MAX_POLY_COEF_SIZE] | Polynomial coefficients to convert an effector angle command to the raw command to send the servo or motor |
 
-The effector type is an enum called *EffectorType*:
+**struct EffectorConfig<std::size_t N>** defines the configuration for the *Effector* object. Templated by the number of effectors.
 
 | Name | Description |
 | --- | --- |
-| SERVO | A servo / actuator |
-| MOTOR | A motor |
+| std::variant<HardwareSerial *, std::array<int8_t, N>> hw | Either a pointer to a Serial port for SBUS or an array of pin numbers for PWM |
+| EffectorChannel effectors[N] | Effector configuration | 
 
-**Effector** The *Effector* class defines a common interface to effectors. It is templated with the object implementing this interface for the desired sensor. It is also templated with the number of effectors of the specified object. For example, the SBUS implementation with 16 SBUS channels may be:
+**Effector** Concepts are used to define what an *Effector* compliant object looks like and provide a means to templating against an *Effector* interface. The required methods are:
 
-```C++
-bfs::Effector<bfs::SbusTx, 16> effector(&Serial1);
-```
+**bool Init(const EffectorConfig &cfg)** Configures and initializes the effectors given a reference to the *EffectorConfig* struct. Returns true on successfully initializing the effectors.
 
-Similar to how a pure virtual class can be used to define an interface using dynamic polymorphism, this approach uses static polymorphism.
+**void Cmd(std::span<float> cmd)** Sets the effector commands given a span of angle commands.
 
-**explicit Effector(HardwareSerial &ast;bus)** creates an effector object; a pointer to the Serial bus object is passed.
+**void Write()** Sends the commands to the effectors.
 
-**explicit Effector(const std::array<int, N> &pins)** creates an effector object, an array of effector pins is passed.
+**void EnableMotors()** Enables motor commands. If not enabled, the failsafe command is sent instead.
 
-**bool Init(const std::array<EffectorConfig, N> &ref)** initializes communication with the effectors and configures them given an array of EffectorConfig objects. Returns true if communication is established and configuration was successful.
+**void DisableMotors()** Disables motor commands.
 
-**bool Cmd(const std::array<float, N> &cmds)** sets the effector commands given an array of angle commands.
+**void EnableServos()** Enables servo commands. If not enabled, the failsafe command is sent instead.
 
-**void Write()** writes the commands to the effectors.
-
-**void EnableMotors(const bool val)** enables outputs from the motors if passed true, otherwise, uses the failsafe command. Defaults false.
-
-**void EnableMotors(const bool val)** enables outputs from the servos if passed true, otherwise, uses the failsafe command. Defaults true.
-
+**void DisableServos()** Disables servo commands.

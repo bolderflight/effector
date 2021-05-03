@@ -26,38 +26,50 @@
 #ifndef INCLUDE_EFFECTOR_EFFECTOR_H_
 #define INCLUDE_EFFECTOR_EFFECTOR_H_
 
+#include <span>
+#include <optional>
+#include <variant>
 #include <array>
 #include <vector>
-#include "Core/core.h"
+#include "core/core.h"
 
 namespace bfs {
 
-enum class EffectorType {
-  SERVO,
-  MOTOR
+enum EffectorType : int8_t {
+  SERVO = 0,
+  MOTOR = 1
 };
-struct EffectorConfig {
+/* Maximum poly_coef size */
+static constexpr std::size_t MAX_POLY_COEF_SIZE = 10;
+/* Config for a single effector */
+struct EffectorChannel {
   EffectorType type;
   int8_t ch;
   float min;
   float max;
   float failsafe;
-  std::vector<float> poly_coef;
+  int8_t num_coef;
+  float poly_coef[MAX_POLY_COEF_SIZE];
 };
-template<class Impl, std::size_t N>
-class Effector {
- public:
-  explicit Effector(HardwareSerial *bus) : impl_(bus) {}
-  explicit Effector(const std::array<int, N> &pins) : impl_(pins) {}
-  bool Init(const std::array<EffectorConfig, N> &ref) {return impl_.Init(ref);}
-  bool Cmd(const std::array<float, N> &cmds) {return impl_.Cmd(cmds);}
-  void Write() {impl_.Write();}
-  void EnableMotors(const bool val) {impl_.EnableMotors(val);}
-  void EnableServos(const bool val) {impl_.EnableServos(val);}
+/* Effector config, templated with number of effectors */
+template<std::size_t N>
+struct EffectorConfig {
+  std::variant<HardwareSerial *, std::array<int8_t, N>> hw;
+  EffectorChannel effectors[N];
+};
 
- private:
-  Impl impl_;
-};
+template<typename T, std::size_t N>
+concept Effector = requires(T effector,
+                            const EffectorConfig<N> &cfg,
+                            std::span<float> cmds) {
+  { effector.Init(cfg) } -> std::same_as<bool>;
+  { effector.Cmd(cmds) } -> std::same_as<void>;
+  { effector.Write() } -> std::same_as<void>;
+  { effector.EnableMotors() } -> std::same_as<void>;
+  { effector.DisableMotors() } -> std::same_as<void>;
+  { effector.EnableServos() } -> std::same_as<void>;
+  { effector.DisableServos() } -> std::same_as<void>;
+};  // NOLINT - gets confused with concepts and semicolon after braces
 
 }  // namespace bfs
 
