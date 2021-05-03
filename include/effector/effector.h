@@ -32,6 +32,7 @@
 #include <array>
 #include <vector>
 #include "core/core.h"
+#include "global_defs/global_defs.h"
 
 namespace bfs {
 
@@ -39,8 +40,6 @@ enum EffectorType : int8_t {
   SERVO = 0,
   MOTOR = 1
 };
-/* Maximum poly_coef size */
-static constexpr std::size_t MAX_POLY_COEF_SIZE = 10;
 /* Config for a single effector */
 struct EffectorChannel {
   EffectorType type;
