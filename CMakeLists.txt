@@ -5,7 +5,7 @@ if (DEFINED MCU)
 endif()
 # Project information
 project(Effector
-	VERSION 6.0.0
+	VERSION 6.0.1
 	DESCRIPTION "Effector interface"
 	LANGUAGES CXX
 )
@@ -21,12 +21,20 @@ if (DEFINED MCU)
 		GIT_TAG v2.0.5
 	)
 	FetchContent_MakeAvailable(core)
+	# Fetch global defs
+	FetchContent_Declare(
+		global_defs
+		GIT_REPOSITORY https://github.com/bolderflight/global_defs.git
+		GIT_TAG v2.0.0
+	)
+	FetchContent_MakeAvailable(global_defs)
 	# Add the library target
 	add_library(effector INTERFACE)
 	# Link libraries
 	target_link_libraries(effector
 		INTERFACE
 			core
+			global_defs
 	)
 	# Setup include directories 
 	target_include_directories(effector INTERFACE include/)

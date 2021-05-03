@@ -1,5 +1,8 @@
 # Changelog
 
+## v6.0.1
+- Pull MAX_POLY_COEF_SIZE from global_defs
+
 ## v6.0.0
 - Updated interface to use concepts
 
