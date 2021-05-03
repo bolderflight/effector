@@ -1,5 +1,8 @@
 # Changelog
 
+## v6.0.0
+- Updated interface to use concepts
+
 ## v5.0.0
 - Modified to be an interface class
 
