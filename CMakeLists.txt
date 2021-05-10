@@ -5,7 +5,7 @@ if (DEFINED MCU)
 endif()
 # Project information
 project(Effector
-	VERSION 6.0.1
+	VERSION 6.0.2
 	DESCRIPTION "Effector interface"
 	LANGUAGES CXX
 )

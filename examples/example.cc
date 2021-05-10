@@ -30,7 +30,7 @@ template<std::size_t N>
 class EffectorExample {
  public:
   bool Init(const bfs::EffectorConfig<N> &cfg) {}
-  void Cmd(std::span<float> cmds) {}
+  void Cmd(std::span<const float> cmds) {}
   void Write() {}
   void EnableMotors() {}
   void DisableMotors() {}

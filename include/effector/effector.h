@@ -60,7 +60,7 @@ struct EffectorConfig {
 template<typename T, std::size_t N>
 concept Effector = requires(T effector,
                             const EffectorConfig<N> &cfg,
-                            std::span<float> cmds) {
+                            std::span<const float> cmds) {
   { effector.Init(cfg) } -> std::same_as<bool>;
   { effector.Cmd(cmds) } -> std::same_as<void>;
   { effector.Write() } -> std::same_as<void>;
