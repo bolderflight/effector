@@ -1,5 +1,8 @@
 # Changelog
 
+## v6.0.2
+- Fixed constness of std::span
+
 ## v6.0.1
 - Pull MAX_POLY_COEF_SIZE from global_defs
 
