@@ -1,5 +1,8 @@
 # Changelog
 
+## v6.1.0
+- Moved from Enum to plain old data types to ease integration with Simulink autocode
+
 ## v6.0.2
 - Fixed constness of std::span
 

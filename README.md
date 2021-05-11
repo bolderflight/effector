@@ -39,16 +39,16 @@ This library is within the namespace *bfs*.
 
 **enum EffectorType** Describes the type of effector.
 
-| Name | Description |
+| Name | Value (int8_t) | Description |
 | --- | --- |
-| SERVO_PWM | A servo / actuator |
-| MOTOR_PWM | A motor |
+| SERVO_PWM | 0 | A servo / actuator |
+| MOTOR_PWM | 1 | A motor |
 
 **struct EffectorChannel** defines the configuration for a single effector.
 
 | Name | Description |
 | --- | --- |
-| EffectorType type | The effector type |
+| int8_t type | The effector type |
 | int8_t ch | The effector channel number |
 | float min | Minimum command  |
 | float max | Maximum command |
