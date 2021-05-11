@@ -27,10 +27,7 @@
 #define INCLUDE_EFFECTOR_EFFECTOR_H_
 
 #include <span>
-#include <optional>
 #include <variant>
-#include <array>
-#include <vector>
 #include "core/core.h"
 #include "global_defs/global_defs.h"
 
@@ -42,7 +39,7 @@ enum EffectorType : int8_t {
 };
 /* Config for a single effector */
 struct EffectorChannel {
-  EffectorType type;
+  int8_t type;
   int8_t ch;
   float min;
   float max;
