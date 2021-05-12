@@ -1,5 +1,8 @@
 # Changelog
 
+## v6.1.1
+- Updated to support global_defs v2.1.0
+
 ## v6.1.0
 - Moved from Enum to plain old data types to ease integration with Simulink autocode
 
