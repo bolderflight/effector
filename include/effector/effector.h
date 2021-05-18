@@ -28,7 +28,6 @@
 
 #include <span>
 #include <variant>
-#include <optional>
 #include "core/core.h"
 #include "global_defs/global_defs.h"
 
@@ -41,18 +40,18 @@ enum EffectorType : int8_t {
 /* Config for a single effector */
 struct EffectorChannel {
   int8_t type;
-  int8_t ch;
-  float min;
-  float max;
-  float failsafe;
-  int8_t num_coef;
+  int8_t ch = -1;
+  float min = 0;
+  float max = 0;
+  float failsafe = 0;
+  int8_t num_coef = 0;
   float poly_coef[MAX_POLY_COEF_SIZE];
 };
 /* Effector config, templated with number of effectors */
 template<std::size_t N>
 struct EffectorConfig {
   std::variant<HardwareSerial *, std::array<int8_t, N>> hw;
-  std::optional<EffectorChannel> effectors[N];
+  EffectorChannel effectors[N];
 };
 
 template<typename T, std::size_t N>
