@@ -1,5 +1,8 @@
 # Changelog
 
+## v6.1.3
+- std::optional doesn't work, since I'd like to use initializer lists, switching to a default ch value of -1 to check whether an EffectorChannel was set.
+
 ## v6.1.2
 - Made EffectorChannel array std::optional so we can check if an effector has been configured.
 
