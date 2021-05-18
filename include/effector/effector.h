@@ -28,6 +28,7 @@
 
 #include <span>
 #include <variant>
+#include <optional>
 #include "core/core.h"
 #include "global_defs/global_defs.h"
 
@@ -51,7 +52,7 @@ struct EffectorChannel {
 template<std::size_t N>
 struct EffectorConfig {
   std::variant<HardwareSerial *, std::array<int8_t, N>> hw;
-  EffectorChannel effectors[N];
+  std::optional<EffectorChannel> effectors[N];
 };
 
 template<typename T, std::size_t N>

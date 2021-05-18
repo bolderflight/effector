@@ -1,5 +1,8 @@
 # Changelog
 
+## v6.1.2
+- Made EffectorChannel array std::optional so we can check if an effector has been configured.
+
 ## v6.1.1
 - Updated to support global_defs v2.1.0
 
