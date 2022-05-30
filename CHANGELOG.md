@@ -1,5 +1,8 @@
 # Changelog
 
+## v7.0.0
+- Simplified interface and expect that commands are received normalized +/-1
+
 ## v6.1.3
 - std::optional doesn't work, since I'd like to use initializer lists, switching to a default ch value of -1 to check whether an EffectorChannel was set.
 

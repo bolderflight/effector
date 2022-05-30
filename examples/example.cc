@@ -2,7 +2,7 @@
 * Brian R Taylor
 * brian.taylor@bolderflight.com
 * 
-* Copyright (c) 2021 Bolder Flight Systems Inc
+* Copyright (c) 2022 Bolder Flight Systems Inc
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the “Software”), to
@@ -26,53 +26,22 @@
 #include "effector/effector.h"
 
 /* Example class compiant with the effector interface */
-template<std::size_t N>
 class EffectorExample {
  public:
-  bool Init(const bfs::EffectorConfig<N> &cfg) {}
-  void Cmd(std::span<const float> cmds) {}
+  bool Config(const bfs::EffectorConfig &cfg) {}
+  bool Init();
+  void Cmd(const bfs::EffectorCmd &cmds) {}
   void Write() {}
-  void EnableMotors() {}
-  void DisableMotors() {}
-  void EnableServos() {}
-  void DisableServos() {}
 };
+
+/* Checking that SensorExample class meets the requirements of bfs::Effector */
+static_assert(bfs::Effector<EffectorExample>,
+  "Sensor example should conform to the effector interface");
 
 /* Function that is templated against the Effector interface */
-template<std::size_t N, bfs::Effector<N> T>
-bool InitEffector(T effector, const bfs::EffectorConfig<N> &config) {
-  return effector.Init(config);
+template<bfs::Effector T>
+bool InitEffector(T effector, const bfs::EffectorConfig &config) {
+  return effector.Config(config);
 }
 
-/* Example effector config */
-static constexpr std::size_t NUM_PWM_PINS = 5;
-std::array<int8_t, NUM_PWM_PINS> PWM_PINS = {1, 2, 3, 4, 5};
-bfs::EffectorConfig<NUM_PWM_PINS> config = {
-  .hw = PWM_PINS,
-  .effectors = {
-    {
-      .type = bfs::SERVO,
-      .ch = 0,
-      .min = -20,
-      .max = 20,
-      .failsafe = 0,
-      .num_coef = 2,
-      .poly_coef = {1, 0}
-    },
-    {
-      .type = bfs::SERVO,
-      .ch = 1,
-      .min = -20,
-      .max = 20,
-      .failsafe = -5,
-      .num_coef = 2,
-      .poly_coef = {2, 0}
-    }
-  }
-};
-
-int main() {
-  EffectorExample<NUM_PWM_PINS> pwm;
-  bool status = InitEffector<NUM_PWM_PINS>(pwm, config);
-}
-
+int main() {}

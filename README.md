@@ -1,4 +1,8 @@
-# effector
+[![Pipeline](https://gitlab.com/bolderflight/software/effector/badges/main/pipeline.svg)](https://gitlab.com/bolderflight/software/effector/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+![Bolder Flight Systems Logo](img/logo-words_75.png)
+
+# Effector
 Defines a common interface for our effectors.
    * [License](LICENSE.md)
    * [Changelog](CHANGELOG.md)
@@ -21,7 +25,7 @@ cmake .. -DMCU=MK66FX1M0
 make
 ```
 
-This will build the library. Notice that the *cmake* command includes a define specifying the microcontroller the code is being compiled for. This is required to correctly configure the code, CPU frequency, and compile/linker options. The available MCUs are:
+This will build the library and an example called *example*, which has source code located in *examples/example.cc*. Notice that the *cmake* command includes a define specifying the microcontroller the code is being compiled for. This is required to correctly configure the code, CPU frequency, and compile/linker options. The available MCUs are:
    * MK20DX128
    * MK20DX256
    * MK64FX512
@@ -37,44 +41,29 @@ This library is within the namespace *bfs*.
 
 ## Class / Methods
 
-**enum EffectorType** Describes the type of effector.
+**inline constexpr int8_t MAX_NUM_EFFECTOR_CH** defines the maximum number of effector channels from any one interface, currently set to 32.
 
-| Name | Value (int8_t) | Description |
-| --- | --- |
-| SERVO_PWM | 0 | A servo / actuator |
-| MOTOR_PWM | 1 | A motor |
+**inline constexpr int8_t MAX_NUM_SBUS_CH** defines the maximum number of effector channels available from SBUS, currently set to 16.
 
-**struct EffectorChannel** defines the configuration for a single effector.
+**struct EffectorConfig** defines the configuration for the *Effector* object.
 
 | Name | Description |
 | --- | --- |
-| int8_t type | The effector type |
-| int8_t ch | The effector channel number |
-| float min | Minimum command  |
-| float max | Maximum command |
-| float failsafe | Failsafe commnd |
-| int8_t num_coef | The number of polynomial coefficients |
-| float poly_coef[MAX_POLY_COEF_SIZE] | Polynomial coefficients to convert an effector angle command to the raw command to send the servo or motor |
+| std::optional<int8_t> num_ch | The number of effector channels. Currently ignored by SBUS effectors, which allow up to MAX_NUM_SBUS_CH of channels, but necessary for configuring PWM effectors. |
+| std::variant<HardwareSerial *, std::array<int8_t, MAX_NUM_EFFECTOR_CH>> hw | Either the hardware serial port used for SBUS effectors or an array pins to be used for PWM effectors |
 
-**struct EffectorConfig<std::size_t N>** defines the configuration for the *Effector* object. Templated by the number of effectors.
+**struct EffectorCmd** defines a struct for setting the effector commands.
 
 | Name | Description |
 | --- | --- |
-| std::variant<HardwareSerial *, std::array<int8_t, N>> hw | Either a pointer to a Serial port for SBUS or an array of pin numbers for PWM |
-| EffectorChannel effectors[N] | Effector configuration | 
+| float cmd[MAX_NUM_EFFECTOR_CH] | Effector commands, normalized to +/-1 |
 
 **Effector** Concepts are used to define what an *Effector* compliant object looks like and provide a means to templating against an *Effector* interface. The required methods are:
 
-**bool Init(const EffectorConfig &cfg)** Configures and initializes the effectors given a reference to the *EffectorConfig* struct. Returns true on successfully initializing the effectors.
+**bool Config(const EffectorConfig &cfg)** Sets the effector configuration. Note that this should just set the configuration options in the effector driver, the configuration is actually applied to the effectors in the *Init* method. Configuration options should be checked for validity. True is returned on receiving a valid configuration, false on an invalid configuration.
 
-**void Cmd(std::span<float> cmd)** Sets the effector commands given a span of angle commands.
+**bool Init()** This method should establish communication and configure the effectors. True is returned on successfully initializing the effectors.
+
+**void Cmd(const EffectorCmd &cmds)** Sets the effector commands.
 
 **void Write()** Sends the commands to the effectors.
-
-**void EnableMotors()** Enables motor commands. If not enabled, the failsafe command is sent instead.
-
-**void DisableMotors()** Disables motor commands.
-
-**void EnableServos()** Enables servo commands. If not enabled, the failsafe command is sent instead.
-
-**void DisableServos()** Disables servo commands.

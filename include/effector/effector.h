@@ -2,7 +2,7 @@
 * Brian R Taylor
 * brian.taylor@bolderflight.com
 * 
-* Copyright (c) 2021 Bolder Flight Systems Inc
+* Copyright (c) 2022 Bolder Flight Systems Inc
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the “Software”), to
@@ -26,45 +26,35 @@
 #ifndef INCLUDE_EFFECTOR_EFFECTOR_H_
 #define INCLUDE_EFFECTOR_EFFECTOR_H_
 
-#include <span>
+#include <concepts>
+#include <optional>
 #include <variant>
+#include <array>
+#include <cstdint>
 #include "core/core.h"
-#include "global_defs/global_defs.h"
 
 namespace bfs {
 
-enum EffectorType : int8_t {
-  SERVO = 0,
-  MOTOR = 1
-};
-/* Config for a single effector */
-struct EffectorChannel {
-  int8_t type;
-  int8_t ch = -1;
-  float min = 0;
-  float max = 0;
-  float failsafe = 0;
-  int8_t num_coef = 0;
-  float poly_coef[MAX_POLY_COEF_SIZE];
-};
-/* Effector config, templated with number of effectors */
-template<std::size_t N>
+inline constexpr int8_t MAX_NUM_EFFECTOR_CH = 32;
+inline constexpr int8_t MAX_NUM_SBUS_CH = 16;
+
+/* Effector config */
 struct EffectorConfig {
-  std::variant<HardwareSerial *, std::array<int8_t, N>> hw;
-  EffectorChannel effectors[N];
+  std::optional<int8_t> num_ch;
+  std::variant<HardwareSerial *, std::array<int8_t, MAX_NUM_EFFECTOR_CH>> hw;
+};
+/* Effector command */
+struct EffectorCmd {
+  float cmd[MAX_NUM_EFFECTOR_CH];
 };
 
-template<typename T, std::size_t N>
-concept Effector = requires(T effector,
-                            const EffectorConfig<N> &cfg,
-                            std::span<const float> cmds) {
-  { effector.Init(cfg) } -> std::same_as<bool>;
+template<typename T>
+concept Effector = requires(T effector, const EffectorConfig &cfg,
+                                        const EffectorCmd &cmds) {
+  { effector.Config(cfg) } -> std::same_as<bool>;
+  { effector.Init() } -> std::same_as<bool>;
   { effector.Cmd(cmds) } -> std::same_as<void>;
   { effector.Write() } -> std::same_as<void>;
-  { effector.EnableMotors() } -> std::same_as<void>;
-  { effector.DisableMotors() } -> std::same_as<void>;
-  { effector.EnableServos() } -> std::same_as<void>;
-  { effector.DisableServos() } -> std::same_as<void>;
 };  // NOLINT - gets confused with concepts and semicolon after braces
 
 }  // namespace bfs
